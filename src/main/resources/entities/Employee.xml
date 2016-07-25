@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Employee">
+
+    <insert id="insert" parameterClass="Entities.Employee">
+        insert into EMPLOYEE(first_name, last_name, salary)
+        values (#first_name#, #last_name#, #salary#)
+
+        <!--Will return this-->
+        <selectKey resultClass="int" keyProperty="id">
+            select max(id) from employee
+        </selectKey>
+    </insert>
+
+<!--    If you pass an ID, then it returns records corresponding to that ID Otherwise, it returns all the records.-->
+    <select id="getById" resultClass="Entities.Employee">
+        SELECT * FROM EMPLOYEE
+
+        <dynamic prepend="WHERE ">
+            <isNotNull property="id">
+                id = #id#
+            </isNotNull>
+        </dynamic>
+
+    </select>
+
+    <update id="update" parameterClass="Entities.Employee">
+        UPDATE EMPLOYEE
+        SET    first_name = #first_name#
+        WHERE  id = #id#
+    </update>
+
+    <delete id="delete" parameterClass="int">
+        DELETE FROM EMPLOYEE
+        WHERE  id = #id#
+    </delete>
+
+    <!-- Using ResultMap -->
+    <resultMap id="result" class="Entities.Employee">
+        <result property="id" column="id"/>
+        <result property="first_name" column="first_name"/>
+        <result property="last_name" column="last_name"/>
+        <result property="salary" column="salary"/>
+    </resultMap>
+
+    <select id="useResultMap" resultMap="result">
+        SELECT * FROM EMPLOYEE
+        WHERE id=#id#
+    </select>
+
+</sqlMap>
